@@ -48,5 +48,5 @@ const promiseQuery = (sql) => {
 };
 
 module.exports = {
-  promiseQuery: promiseQuery,
+  promiseQuery,
 };
