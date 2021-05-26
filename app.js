@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyparser = require("body-parser");
+const cors = require("cors");
 const app = express();
 const dotenv = require("dotenv");
 
@@ -8,6 +9,14 @@ dotenv.config();
 
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
+
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    methods: ["GET", "POST", "Delete"],
+    credentials: true,
+  })
+);
 
 //router api
 const userRouter = require("./routers/user.router");
