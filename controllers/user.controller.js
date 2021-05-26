@@ -1,98 +1,55 @@
-const {
-  create,
-  getUsersByUserId,
-  getUsers,
-  deleteUser,
-  updateUser,
-} = require("../models/user.model");
+const User = require("../models/user.model");
 const { genSaltSync, hashSync } = require("bcrypt");
 
 module.exports = {
-  createUser: (req, res) => {
+  createUser: async (req, res) => {
     const body = req.body;
     const salt = genSaltSync(10);
     body.password = hashSync(body.password, salt);
-    create(body, (err, result) => {
-      if (err) {
-        console.log(err);
-        return (
-          res.status(500),
-          json({
-            success: 0,
-            message: "Database connection error",
-          })
-        );
-      }
-      return res.status(200).json({
-        success: 1,
-        data: result,
-      });
-    });
+    // console.log(body)
+    const result = await new User().createUser(
+      body.first_name,
+      body.last_name,
+      body.gender,
+      body.email,
+      body.password,
+      body.number
+    );
+    res.json(result);
+    res.end();
   },
-  getUsersByUserId: (req,res) =>{
-    const id = req.params.id
-    getUsersByUserId(id ,(err,results)=>{
-      if(err){
-        console.log(err)
-        return
-      }
-      if(!results){
-        return res.json({
-          success: 0,
-          message: "Record not Found"
-        })
-      }
-      return res.json({
-        success: 1,
-        data: results
-      })
-    })
+  getUsersByUserId: async (req, res) => {
+    const id = req.params.id;
+    const result = await new User().getUsersByUserId(id);
+    res.json(result);
+    res.end();
   },
-  getUsers: (req, res) => {
-    getUsers((err, results) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      return res.json({
-        success: 1,
-        data: results
-      });
-    });
+  getUsers: async (req, res) => {
+    const result = await new User().getUsers();
+    res.json(result);
+    res.end();
   },
-  updateUsers: (req, res) => {
+  updateUsers: async (req, res) => {
     const body = req.body;
     const salt = genSaltSync(10);
     body.password = hashSync(body.password, salt);
-    updateUser(body, (err, results) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      return res.json({
-        success: 1,
-        message: "updated successfully"
-      });
-    });
+    //console.log(body)
+    const result = await new User().updateUser(
+      body.id,
+      body.first_name,
+      body.last_name,
+      body.gender,
+      body.email,
+      body.password,
+      body.number);
+    res.json(result);
+    res.end();
   },
-  deleteUser: (req, res) => {
-    const data = req.body;
-    deleteUser(data, (err, results) => {
-      //console.log(results)
-      if (err) {
-        console.log(err);
-        return;
-      }
-      if (!results) {
-        return res.json({
-          success: 0,
-          message: "Record Not Found"
-        });
-      }
-      return res.json({
-        success: 1,
-        message: "user deleted successfully"
-      });
-    });
-  }
+  deleteUser: async (req, res) => {
+    const id = req.params.id;
+    console.log(id)
+    const result = await new User().deleteUser(id);
+    res.json(result);
+    res.end();
+  },
 };

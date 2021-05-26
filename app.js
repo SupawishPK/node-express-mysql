@@ -1,9 +1,13 @@
 const express = require("express");
+const bodyparser = require("body-parser");
 const app = express();
 const dotenv = require("dotenv");
 
 app.use(express.json());
 dotenv.config();
+
+app.use(bodyparser.urlencoded({ extended: true }));
+app.use(bodyparser.json());
 
 //router api
 const userRouter = require("./routers/user.router");

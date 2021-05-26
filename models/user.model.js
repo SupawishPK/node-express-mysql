@@ -1,76 +1,71 @@
-const pool = require("../config/database");
+const connect = require("../config/connect");
 
-module.exports = {
-  create: (data, callBack) => {
-    pool.query(
-      `insert into registration(firstName, lastName, gender, email, password, number)
-            values(?,?,?,?,?,?)`,
-      [
-        data.first_name,
-        data.last_name,
-        data.gender,
-        data.email,
-        data.password,
-        data.number,
-      ],
-      (error, result, fields) => {
-        if (error) {
-          return callBack(error);
-        }
-        return callBack(null, result);
-      }
-    );
-  },
-  getUsers: (callBack) => {
-    pool.query(`select * from registration`, [], (error, result, fields) => {
-      if (error) {
-        return callBack(error);
-      }
-      return callBack(null, result);
-    });
-  },
-  getUsersByUserId: (id, callBack) => {
-    pool.query(
-      `select * from registration where id = ?`,
-      [id],
-      (error, result, fields) => {
-        if (error) {
-          return callBack(error);
-        }
-        return callBack(null, result[0]);
-      }
-    );
-  },
-  updateUser: (data, callBack) => {
-    pool.query(
-      `update registration set firstName=?, lastName=?, gender=?, email=?, password=?, number=? where id = ?`,
-      [
-        data.first_name,
-        data.last_name,
-        data.gender,
-        data.email,
-        data.password,
-        data.number,
-        data.id,
-      ],
-      (error, results, fields) => {
-        if (error) {
-          return callBack(error);
-        }
-        return callBack(null, results[0]);
-      }
-    );
-  },
-  deleteUser: (data, callBack) => {
-    pool.query(
-      `delete from registration where id = ?`,
-      [data.id],
-      (error, results, fields) => {
-        if (error) {
-          return callBack(error);
-        }
-        return callBack(null, results);
-      }
-    );
-  },
-};
+class User {
+  async createUser(firstname, lastname, gender, email, password, number) {
+    const sql = `insert into registration(firstName, lastName, gender, email, password, number)
+                      values('${firstname}','${lastname}','${gender}','${email}','${password}','${number}')`;
+    const response = await connect.promiseQuery(sql);
+    return response;
+  }
+
+  async getUsersByUserId(id) {
+    const sql = `select * from registration where id = '${id}'`;
+    const response = await connect.promiseQuery(sql);
+    if (!response[0]) {
+      return {
+        success: 0,
+        message: "Record not Found",
+      };
+    }
+    return { success: 1, message: response };
+  }
+
+  async getUsers() {
+    const sql = `select * from registration`;
+    const response = await connect.promiseQuery(sql);
+    return response;
+  }
+
+  async getUsersByUserId(id) {
+    const sql = `select * from registration where id = '${id}'`;
+    const response = await connect.promiseQuery(sql);
+    if (!response[0]) {
+      return {
+        success: 0,
+        message: "Record not Found",
+      };
+    }
+    return { success: 1, message: response };
+  }
+
+  async updateUser(id, first_name, last_name, gender, email, password, number) {
+    const sql = ` UPDATE registration
+                  SET
+                      firstName = '${first_name}',
+                      lastName = '${last_name}',
+                      gender = '${gender}',
+                      email = '${email}',
+                      password = '${password}',
+                      number = '${number}'
+                  WHERE id = '${id}'`;
+    const response = await connect.promiseQuery(sql);
+    return response;
+  }
+
+  async deleteUser(id) {
+    const sql = `DELETE FROM registration WHERE id = '${id}'`;
+    const response = await connect.promiseQuery(sql);
+    if (!response[0]) {
+      return {
+        success: 0,
+        message: "Record Not Found",
+      };
+    }
+    return {
+      success: 1,
+      message: "user deleted successfully",
+    };
+  }
+}
+
+module.exports = User;
