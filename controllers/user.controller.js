@@ -4,7 +4,7 @@ const {
   getUsers,
   deleteUser,
   updateUser,
-} = require("../model/user.service");
+} = require("../models/user.model");
 const { genSaltSync, hashSync } = require("bcrypt");
 
 module.exports = {

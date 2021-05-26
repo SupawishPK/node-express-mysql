@@ -6,7 +6,7 @@ app.use(express.json());
 dotenv.config();
 
 //router api
-const userRouter = require("./router/user.router");
+const userRouter = require("./routers/user.router");
 
 //call api
 app.use("/api", userRouter);
